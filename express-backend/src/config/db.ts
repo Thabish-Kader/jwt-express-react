@@ -1,7 +1,8 @@
+import { SQLITE_DB, SQLITE_PASSWORD, SQLITE_USER } from "@/constants";
 import { Sequelize } from "sequelize";
 
-const sequelize = new Sequelize("database", "thabish", "topsecret", {
-  host: "0.0.0.0",
+const sequelize = new Sequelize(SQLITE_DB, SQLITE_USER, SQLITE_PASSWORD, {
+  host: SQLITE_PASSWORD,
   dialect: "sqlite",
   pool: {
     max: 5,
