@@ -1,16 +1,21 @@
-import { JWT_ACCESS_TOKEN } from "@/constants";
-import User from "@/models/User";
-import { Request, Response } from "express";
-import jwt from "jsonwebtoken";
-export const postTweet = async (req: Request, res: Response) => {
+import { NextFunction, Request, Response } from "express";
+
+export const postTweet = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   const { tweet } = req.body;
-  if (!tweet) {
-    return res.status(400).json({ message: "Cannot send empty tweet" });
-  }
   try {
+    if (!tweet) {
+      throw {
+        status: 400,
+        message: "Cannot send empty tweet",
+      };
+    }
     return res.status(200).json({ message: "Tweet posted successfully" });
   } catch (error) {
     console.error(error);
-    throw Error("User Login failed : " + error);
+    next(error);
   }
 };

@@ -9,19 +9,28 @@ export const loginController = async (
   next: NextFunction,
 ) => {
   const { name, password } = req.body;
-  if (!name || !password) {
-    return res.status(400).json({ message: "All fields are required" });
-  }
 
   try {
+    if (!name || !password) {
+      throw {
+        status: 400,
+        message: "All fields are required",
+      };
+    }
     const user = await User.findOne({ where: { name: name } });
 
     if (!user) {
-      return res.status(401).json({ message: "User not found" });
+      throw {
+        status: 401,
+        message: "User not found",
+      };
     }
 
     if (user.password !== password) {
-      return res.status(401).json({ message: "Invalid credentials" });
+      throw {
+        status: 401,
+        message: "Invalid credentials",
+      };
     }
 
     const accessToken = jwt.sign({ user }, JWT_ACCESS_TOKEN!);
@@ -42,10 +51,13 @@ export const signUpContrtoller = async (
 ) => {
   const { name, password } = req.body;
 
-  if (!name || !password) {
-    return res.status(400).json({ message: "All fields are required" });
-  }
   try {
+    if (!name || !password) {
+      throw {
+        status: 400,
+        message: "All fields are required",
+      };
+    }
     const data = await User.create({ name: name, password: password });
     res.status(201).json({ message: "User created successfully", data });
   } catch (error) {
