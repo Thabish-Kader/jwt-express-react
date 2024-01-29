@@ -14,7 +14,7 @@ app.use(morgan("dev"));
 
 app.use("/api/v1", router);
 
-// Awsome Video on Error handling : https://youtu.be/UVAMha41dwo?si=Y8l_GoJNgf9OJiUH
+// Video on Error handling : https://youtu.be/UVAMha41dwo?si=Y8l_GoJNgf9OJiUH
 app.use(notFoundHandler);
 app.use(errorHandler);
 

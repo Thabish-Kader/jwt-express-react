@@ -33,7 +33,9 @@ export const loginController = async (
       };
     }
 
-    const accessToken = jwt.sign({ user }, JWT_ACCESS_TOKEN!);
+    const accessToken = jwt.sign({ user }, JWT_ACCESS_TOKEN!, {
+      expiresIn: "15m",
+    });
 
     res
       .status(200)

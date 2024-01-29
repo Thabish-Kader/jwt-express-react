@@ -5,7 +5,6 @@ import { JWT_ACCESS_TOKEN } from "@/constants";
 interface IGetUserAuthInfoRequest extends Request {
   user?: any;
 }
-
 export const JwtAuthMiddleWare = (
   req: IGetUserAuthInfoRequest,
   res: Response,
@@ -14,16 +13,21 @@ export const JwtAuthMiddleWare = (
   const header = req.headers["authorization"];
   const token = header && header.split(" ")[1];
 
-  if (!token) {
-    return res.status(401).json({ message: "Verify User" });
-  }
-
   try {
+    if (!token) {
+      throw {
+        status: 401,
+        message: "User not authorized",
+      };
+    }
+
     jwt.verify(token, JWT_ACCESS_TOKEN!, (err, user) => {
+      if (err) throw { status: 403, message: "Verification failed" };
       req.user = user;
       next();
     });
   } catch (error) {
-    return res.status(401).json({ message: "Unauthorized" });
+    console.error(error);
+    next(error);
   }
 };
