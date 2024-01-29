@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { JWT_ACCESS_TOKEN } from "@/constants";
+import { JWT_SECRET } from "@/constants";
 
 interface IGetUserAuthInfoRequest extends Request {
   user?: any;
@@ -21,7 +21,7 @@ export const JwtAuthMiddleWare = (
       };
     }
 
-    jwt.verify(token, JWT_ACCESS_TOKEN!, (err, user) => {
+    jwt.verify(token, JWT_SECRET!, (err, user) => {
       if (err) throw { status: 403, message: "Verification failed" };
       req.user = user;
       next();

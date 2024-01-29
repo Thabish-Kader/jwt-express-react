@@ -1,4 +1,4 @@
-import { JWT_ACCESS_TOKEN } from "@/constants";
+import { JWT_SECRET } from "@/constants";
 import User from "@/models/User";
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
@@ -33,7 +33,7 @@ export const loginController = async (
       };
     }
 
-    const accessToken = jwt.sign({ user }, JWT_ACCESS_TOKEN!, {
+    const accessToken = jwt.sign({ user }, JWT_SECRET!, {
       expiresIn: "15m",
     });
 
@@ -52,7 +52,7 @@ export const signUpContrtoller = async (
   next: NextFunction,
 ) => {
   const { name, password } = req.body;
-
+  // encryypt
   try {
     if (!name || !password) {
       throw {
