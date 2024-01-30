@@ -5,11 +5,12 @@ import { dbConnection, disconnectDB } from "@/config/db";
 import router from "@/route/routes";
 import morgan from "morgan";
 import { errorHandler, notFoundHandler } from "@/middleware/errorMiddleware";
-
+import cookieParser from "cookie-parser";
 const app = express();
 
 app.use(cors());
 app.use(json());
+app.use(cookieParser());
 app.use(morgan("dev"));
 
 app.use("/api/v1", router);

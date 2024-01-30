@@ -1,9 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
 
-export default function Home() {
+export default function SignUp() {
   const [userInput, setUserInput] = useState({
     username: "",
     password: "",
@@ -25,7 +24,7 @@ export default function Home() {
         onSubmit={handleSubmit}
         className="flex flex-col items-center justify-center max-w-sm mx-auto space-y-2 mt-20"
       >
-        <h1 className="text-5xl">Login</h1>
+        <h1 className="text-5xl">Sign Up</h1>
         <input
           type="text"
           name="username"
@@ -46,14 +45,8 @@ export default function Home() {
           type="submit"
           className="p-2 border rounded-lg hover:bg-slate-200 hover:text-black transition-colors duration-300 w-full"
         >
-          Login
+          Sign Up
         </button>
-        <p className="pt-8">
-          Dont have an account ?{" "}
-          <Link href="/signup" className="text-blue-500 underline">
-            Sign Up
-          </Link>
-        </p>
       </form>
     </main>
   );

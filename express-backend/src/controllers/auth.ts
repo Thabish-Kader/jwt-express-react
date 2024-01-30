@@ -3,6 +3,12 @@ import User from "@/models/User";
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 
+const generateAccessToken = (user: any) => {
+  return jwt.sign({ user }, JWT_SECRET!, {
+    expiresIn: "15s",
+  });
+};
+
 export const loginController = async (
   req: Request,
   res: Response,
@@ -33,13 +39,19 @@ export const loginController = async (
       };
     }
 
-    const accessToken = jwt.sign({ user }, JWT_SECRET!, {
-      expiresIn: "15m",
+    const accessToken = generateAccessToken(user);
+    const refreshToken = jwt.sign({ user }, JWT_SECRET!);
+
+    res.setHeader("Authorization", `Bearer ${accessToken}`);
+    res.cookie("jwt", refreshToken, {
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000,
     });
 
-    res
-      .status(200)
-      .json({ message: "User logged in successfully", user, accessToken });
+    res.status(200).json({
+      message: "User logged in successfully",
+      user,
+    });
   } catch (error) {
     console.error(error);
     next(error);
@@ -52,7 +64,6 @@ export const signUpContrtoller = async (
   next: NextFunction,
 ) => {
   const { name, password } = req.body;
-  // encryypt
   try {
     if (!name || !password) {
       throw {
@@ -64,6 +75,32 @@ export const signUpContrtoller = async (
     res.status(201).json({ message: "User created successfully", data });
   } catch (error) {
     console.log(error);
+    next(error);
+  }
+};
+
+export const tokenContoller = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const { jwt: refreshToken } = req.cookies;
+
+  try {
+    if (!refreshToken) {
+      throw {
+        status: 403,
+        message: "Verication Error",
+      };
+    }
+
+    jwt.verify(refreshToken, JWT_SECRET!, (err: Error | null, user: any) => {
+      if (err) throw { status: 403, message: "Verification failed" };
+      const accessToken = generateAccessToken({ user: user.name });
+      res.status(200).json({ accessToken });
+    });
+  } catch (error) {
+    console.error(error);
     next(error);
   }
 };
