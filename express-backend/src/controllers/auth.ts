@@ -1,13 +1,8 @@
 import { JWT_SECRET } from "@/constants";
+import { generateAccessToken } from "@/helpers";
 import User from "@/models/User";
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
-
-const generateAccessToken = (user: any) => {
-  return jwt.sign({ user }, JWT_SECRET!, {
-    expiresIn: "15s",
-  });
-};
 
 export const loginController = async (
   req: Request,
@@ -42,15 +37,11 @@ export const loginController = async (
     const accessToken = generateAccessToken(user);
     const refreshToken = jwt.sign({ user }, JWT_SECRET!);
 
-    res.setHeader("Authorization", `Bearer ${accessToken}`);
-    res.cookie("jwt", refreshToken, {
-      httpOnly: true,
-      maxAge: 24 * 60 * 60 * 1000,
-    });
-
     res.status(200).json({
       message: "User logged in successfully",
       user,
+      accessToken,
+      refreshToken,
     });
   } catch (error) {
     console.error(error);
@@ -72,7 +63,7 @@ export const signUpContrtoller = async (
       };
     }
     const data = await User.create({ name: name, password: password });
-    res.status(201).json({ message: "User created successfully", data });
+    res.status(201).json({ message: "User created successfully" });
   } catch (error) {
     console.log(error);
     next(error);

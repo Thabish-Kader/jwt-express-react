@@ -6,7 +6,7 @@ export const notFoundHandler = (
   res: Response,
   next: NextFunction,
 ) => {
-  const error: CustomError = new Error("Not Found");
+  const error: CustomError = new Error("Api Not Found");
   error.status = 404;
   next(error);
 };

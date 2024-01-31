@@ -1,22 +1,25 @@
 "use client";
 
+import { login } from "@/utils/apis/apis";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function Home() {
-  const [userInput, setUserInput] = useState({
+  const [userInput, setUserInput] = useState<TUserInputs>({
     username: "",
     password: "",
   });
+  const router = useRouter();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setUserInput({ ...userInput, [name]: value });
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(userInput);
+    await login(userInput, setUserInput, router);
   };
 
   return (

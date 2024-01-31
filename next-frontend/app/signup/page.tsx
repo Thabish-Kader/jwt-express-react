@@ -1,5 +1,6 @@
 "use client";
-
+import { signup } from "@/utils/apis/apis";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function SignUp() {
@@ -7,15 +8,16 @@ export default function SignUp() {
     username: "",
     password: "",
   });
+  const router = useRouter();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setUserInput({ ...userInput, [name]: value });
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(userInput);
+    await signup(userInput, setUserInput, router);
   };
 
   return (

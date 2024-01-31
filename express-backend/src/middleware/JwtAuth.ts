@@ -12,7 +12,7 @@ export const JwtAuthMiddleWare = (
 ) => {
   const header = req.headers["authorization"];
   const token = header && header.split(" ")[1];
-
+  console.log(token);
   try {
     if (!token) {
       throw {

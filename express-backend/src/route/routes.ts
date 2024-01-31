@@ -3,7 +3,7 @@ import {
   signUpContrtoller,
   tokenContoller,
 } from "@/controllers/auth";
-import { postTweet } from "@/controllers/posts";
+import { getTweetController } from "@/controllers/tweets";
 import { JwtAuthMiddleWare } from "@/middleware/JwtAuth";
 import { Router } from "express";
 
@@ -12,6 +12,6 @@ const router = Router();
 router.post("/login", loginController);
 router.post("/signup", signUpContrtoller);
 router.post("/generate-token", tokenContoller);
-router.post("/get-tweets", JwtAuthMiddleWare, postTweet);
+router.get("/get-tweets/:id", JwtAuthMiddleWare, getTweetController);
 
 export default router;
