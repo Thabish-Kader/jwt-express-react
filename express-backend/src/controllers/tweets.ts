@@ -1,3 +1,4 @@
+import User from "@/models/User";
 import { NextFunction, Request, Response } from "express";
 
 export const getTweetController = async (
@@ -30,7 +31,14 @@ export const getTweetController = async (
     },
   ];
   try {
-    if (!id) {
+    const user = await User.findOne({ where: { id: id } });
+    if (!user) {
+      throw {
+        status: 400,
+        message: "User not found",
+      };
+    }
+    if (user.id !== parseInt(id)) {
       throw {
         status: 400,
         message: "No, Tweets Associated with this user",

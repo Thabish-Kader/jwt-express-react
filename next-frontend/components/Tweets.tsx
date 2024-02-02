@@ -2,6 +2,7 @@
 import { getTweets } from "@/utils/apis/apis";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import { Toaster } from "sonner";
 
 export const Tweets = () => {
   const [tweets, setTweets] = useState<Tweets[] | undefined>();
@@ -22,6 +23,7 @@ export const Tweets = () => {
           <p>{tweet.retweets}</p>
         </div>
       ))}
+      <Toaster position="top-center" richColors />
     </div>
   );
 };

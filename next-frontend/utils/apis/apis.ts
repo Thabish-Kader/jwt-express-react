@@ -1,8 +1,9 @@
 import axios from "axios";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "@/utils/constants";
-import { setCookie } from "cookies-next";
+import { getCookie, setCookie } from "cookies-next";
 import { getTokenFromLocalStorage } from "@/utils/helpers";
+import { toast } from "sonner";
 
 const baseURL =
   process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:8080/api/v1";
@@ -18,6 +19,33 @@ customAxios.interceptors.request.use((config) => {
   }
   return config;
 });
+
+customAxios.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  async function (error) {
+    const originalRequest = error.config;
+
+    if (error.response.status === 403 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      try {
+        const resp = await generateRefreshToken();
+        const accessToken = resp.accessToken;
+
+        localStorage.setItem(ACCESS_TOKEN, accessToken);
+        customAxios.defaults.headers.common[
+          "Authorization"
+        ] = `Bearer ${accessToken}`;
+        return customAxios(originalRequest);
+      } catch (refreshError) {
+        console.error("Token refresh failed:", refreshError);
+      }
+    }
+    return Promise.reject(error);
+  }
+);
 
 export const login = async (
   userInputs: TUserInputs,
@@ -72,7 +100,21 @@ export const getTweets = async (
     const response = await customAxios.get(`/get-tweets/${id}`);
     const { data } = response;
     setTweets(data);
-  } catch (error) {
+  } catch (error: any) {
     console.log(error);
+    toast.error(error?.response?.data?.error?.message);
+  }
+};
+
+export const generateRefreshToken = async () => {
+  try {
+    const response = await customAxios.get(`/generate-token`, {
+      withCredentials: true,
+    });
+    const { data } = response;
+    return data;
+  } catch (error: any) {
+    console.log(error);
+    toast.error(error?.response?.data?.error?.message);
   }
 };

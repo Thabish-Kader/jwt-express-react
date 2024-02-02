@@ -35,7 +35,7 @@ export const loginController = async (
     }
 
     const accessToken = generateAccessToken(user);
-    const refreshToken = jwt.sign({ user }, JWT_SECRET!);
+    const refreshToken = jwt.sign({ user }, JWT_SECRET!, { expiresIn: "1d" });
 
     res.status(200).json({
       message: "User logged in successfully",
@@ -62,7 +62,7 @@ export const signUpContrtoller = async (
         message: "All fields are required",
       };
     }
-    const data = await User.create({ name: name, password: password });
+    await User.create({ name: name, password: password });
     res.status(201).json({ message: "User created successfully" });
   } catch (error) {
     console.log(error);
@@ -75,8 +75,9 @@ export const tokenContoller = (
   res: Response,
   next: NextFunction,
 ) => {
-  const { jwt: refreshToken } = req.cookies;
-
+  const { refreshToken } = req.cookies;
+  console.log(req.cookies);
+  console.log(refreshToken);
   try {
     if (!refreshToken) {
       throw {
@@ -87,7 +88,7 @@ export const tokenContoller = (
 
     jwt.verify(refreshToken, JWT_SECRET!, (err: Error | null, user: any) => {
       if (err) throw { status: 403, message: "Verification failed" };
-      const accessToken = generateAccessToken({ user: user.name });
+      const accessToken = generateAccessToken(user);
       res.status(200).json({ accessToken });
     });
   } catch (error) {

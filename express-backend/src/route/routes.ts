@@ -11,7 +11,7 @@ const router = Router();
 
 router.post("/login", loginController);
 router.post("/signup", signUpContrtoller);
-router.post("/generate-token", tokenContoller);
+router.get("/generate-token", tokenContoller);
 router.get("/get-tweets/:id", JwtAuthMiddleWare, getTweetController);
 
 export default router;

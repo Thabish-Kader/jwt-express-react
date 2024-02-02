@@ -8,11 +8,10 @@ import { errorHandler, notFoundHandler } from "@/middleware/errorMiddleware";
 import cookieParser from "cookie-parser";
 const app = express();
 
-app.use(cors());
+app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use(json());
 app.use(cookieParser());
 app.use(morgan("dev"));
-
 app.use("/api/v1", router);
 
 // Video on Error handling : https://youtu.be/UVAMha41dwo?si=Y8l_GoJNgf9OJiUH
