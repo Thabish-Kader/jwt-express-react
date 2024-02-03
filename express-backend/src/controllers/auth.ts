@@ -65,7 +65,7 @@ export const signUpContrtoller = async (
     await User.create({ name: name, password: password });
     res.status(201).json({ message: "User created successfully" });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     next(error);
   }
 };
@@ -76,8 +76,7 @@ export const tokenContoller = (
   next: NextFunction,
 ) => {
   const { refreshToken } = req.cookies;
-  console.log(req.cookies);
-  console.log(refreshToken);
+
   try {
     if (!refreshToken) {
       throw {

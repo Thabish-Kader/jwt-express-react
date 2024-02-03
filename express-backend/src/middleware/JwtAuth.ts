@@ -19,6 +19,7 @@ export const JwtAuthMiddleWare = (
         message: "User not authorized",
       };
     }
+
     jwt.verify(token, JWT_SECRET!, (err, user) => {
       if (err) throw { status: 403, message: "Verification failed" };
       req.user = user;

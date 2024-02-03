@@ -61,12 +61,12 @@ export const login = async (
     const { data } = response;
     const id = data?.user?.id;
     if (response.status === 200) {
-      localStorage.setItem(ACCESS_TOKEN, data.refreshToken);
+      localStorage.setItem(ACCESS_TOKEN, data.accessToken);
       setCookie(REFRESH_TOKEN, data.refreshToken, { maxAge: 60 * 60 * 24 });
       router.push(`/dashboard/${id}`);
     }
   } catch (error) {
-    console.log(error);
+    console.error(error);
   } finally {
     setUserInput({ username: "", password: "" });
   }
@@ -86,7 +86,7 @@ export const signup = async (
       router.push("/");
     }
   } catch (error) {
-    console.log(error);
+    console.error(error);
   } finally {
     setUserInput({ username: "", password: "" });
   }
@@ -101,7 +101,7 @@ export const getTweets = async (
     const { data } = response;
     setTweets(data);
   } catch (error: any) {
-    console.log(error);
+    console.error(error);
     toast.error(error?.response?.data?.error?.message);
   }
 };
@@ -114,7 +114,7 @@ export const generateRefreshToken = async () => {
     const { data } = response;
     return data;
   } catch (error: any) {
-    console.log(error);
+    console.error(error);
     toast.error(error?.response?.data?.error?.message);
   }
 };

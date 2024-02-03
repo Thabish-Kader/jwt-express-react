@@ -12,6 +12,7 @@ app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use(json());
 app.use(cookieParser());
 app.use(morgan("dev"));
+
 app.use("/api/v1", router);
 
 // Video on Error handling : https://youtu.be/UVAMha41dwo?si=Y8l_GoJNgf9OJiUH
