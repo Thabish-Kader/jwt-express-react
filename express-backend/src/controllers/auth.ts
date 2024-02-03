@@ -1,4 +1,4 @@
-import { JWT_SECRET } from "@/constants";
+import { ACCESS_TOKEN, JWT_SECRET, REFRESH_TOKEN } from "@/constants";
 import { generateAccessToken } from "@/helpers";
 import User from "@/models/User";
 import { NextFunction, Request, Response } from "express";
@@ -35,13 +35,17 @@ export const loginController = async (
     }
 
     const accessToken = generateAccessToken(user);
+    res.cookie(ACCESS_TOKEN, accessToken, { httpOnly: true, secure: true });
     const refreshToken = jwt.sign({ user }, JWT_SECRET!, { expiresIn: "1d" });
+    res.cookie(REFRESH_TOKEN, refreshToken, {
+      httpOnly: false,
+      secure: false,
+    });
 
     res.status(200).json({
       message: "User logged in successfully",
       user,
-      accessToken,
-      refreshToken,
+      // refreshToken,
     });
   } catch (error) {
     console.error(error);
@@ -88,7 +92,8 @@ export const tokenContoller = (
     jwt.verify(refreshToken, JWT_SECRET!, (err: Error | null, user: any) => {
       if (err) throw { status: 403, message: "Verification failed" };
       const accessToken = generateAccessToken(user);
-      res.status(200).json({ accessToken });
+      res.cookie(ACCESS_TOKEN, accessToken, { httpOnly: true, secure: true });
+      res.status(200).json({ message: "Token refreshed successfully" });
     });
   } catch (error) {
     console.error(error);
