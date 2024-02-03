@@ -1,8 +1,5 @@
 import axios from "axios";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
-import { ACCESS_TOKEN, REFRESH_TOKEN } from "@/utils/constants";
-import { getCookie, setCookie } from "cookies-next";
-import { getTokenFromLocalStorage } from "@/utils/helpers";
 import { toast } from "sonner";
 
 const baseURL =
@@ -10,14 +7,6 @@ const baseURL =
 
 const customAxios = axios.create({
   baseURL: baseURL,
-});
-
-customAxios.interceptors.request.use((config) => {
-  const token = getTokenFromLocalStorage();
-  if (token) {
-    config.headers["Authorization"] = `Bearer ${token}`;
-  }
-  return config;
 });
 
 customAxios.interceptors.response.use(
@@ -31,13 +20,7 @@ customAxios.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        const resp = await generateRefreshToken();
-        const accessToken = resp.accessToken;
-
-        localStorage.setItem(ACCESS_TOKEN, accessToken);
-        customAxios.defaults.headers.common[
-          "Authorization"
-        ] = `Bearer ${accessToken}`;
+        await generateRefreshToken();
         return customAxios(originalRequest);
       } catch (refreshError) {
         console.error("Token refresh failed:", refreshError);
@@ -53,16 +36,20 @@ export const login = async (
   router: AppRouterInstance
 ) => {
   try {
-    const response = await customAxios.post("/login", {
-      name: userInputs.username,
-      password: userInputs.password,
-    });
+    const response = await customAxios.post(
+      "/login",
+      {
+        name: userInputs.username,
+        password: userInputs.password,
+      },
+      {
+        withCredentials: true,
+      }
+    );
 
     const { data } = response;
     const id = data?.user?.id;
     if (response.status === 200) {
-      localStorage.setItem(ACCESS_TOKEN, data.accessToken);
-      setCookie(REFRESH_TOKEN, data.refreshToken, { maxAge: 60 * 60 * 24 });
       router.push(`/dashboard/${id}`);
     }
   } catch (error) {
@@ -97,7 +84,9 @@ export const getTweets = async (
   setTweets: React.Dispatch<React.SetStateAction<Tweets[] | undefined>>
 ) => {
   try {
-    const response = await customAxios.get(`/get-tweets/${id}`);
+    const response = await customAxios.get(`/get-tweets/${id}`, {
+      withCredentials: true,
+    });
     const { data } = response;
     setTweets(data);
   } catch (error: any) {
@@ -108,11 +97,9 @@ export const getTweets = async (
 
 export const generateRefreshToken = async () => {
   try {
-    const response = await customAxios.get(`/generate-token`, {
+    await customAxios.get(`/generate-token`, {
       withCredentials: true,
     });
-    const { data } = response;
-    return data;
   } catch (error: any) {
     console.error(error);
     toast.error(error?.response?.data?.error?.message);
