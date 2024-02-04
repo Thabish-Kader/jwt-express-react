@@ -18,6 +18,7 @@ export const loginController = async (
         message: "All fields are required",
       };
     }
+
     const user = await User.findOne({ where: { name: name } });
 
     if (!user) {
@@ -35,17 +36,24 @@ export const loginController = async (
     }
 
     const accessToken = generateAccessToken(user);
-    res.cookie(ACCESS_TOKEN, accessToken, { httpOnly: true, secure: true });
+
+    res.cookie(ACCESS_TOKEN, accessToken, {
+      httpOnly: true,
+      secure: true,
+      path: "/",
+    });
+
     const refreshToken = jwt.sign({ user }, JWT_SECRET!, { expiresIn: "1d" });
+
     res.cookie(REFRESH_TOKEN, refreshToken, {
-      httpOnly: false,
-      secure: false,
+      httpOnly: true,
+      secure: true,
+      path: "/",
     });
 
     res.status(200).json({
       message: "User logged in successfully",
       user,
-      // refreshToken,
     });
   } catch (error) {
     console.error(error);
@@ -92,7 +100,11 @@ export const tokenContoller = (
     jwt.verify(refreshToken, JWT_SECRET!, (err: Error | null, user: any) => {
       if (err) throw { status: 403, message: "Verification failed" };
       const accessToken = generateAccessToken(user);
-      res.cookie(ACCESS_TOKEN, accessToken, { httpOnly: true, secure: true });
+      res.cookie(ACCESS_TOKEN, accessToken, {
+        httpOnly: true,
+        secure: true,
+        path: "/",
+      });
       res.status(200).json({ message: "Token refreshed successfully" });
     });
   } catch (error) {

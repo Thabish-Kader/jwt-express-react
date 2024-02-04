@@ -36,16 +36,10 @@ export const login = async (
   router: AppRouterInstance
 ) => {
   try {
-    const response = await customAxios.post(
-      "/login",
-      {
-        name: userInputs.username,
-        password: userInputs.password,
-      },
-      {
-        withCredentials: true,
-      }
-    );
+    const response = await customAxios.post("/login", {
+      name: userInputs.username,
+      password: userInputs.password,
+    });
 
     const { data } = response;
     const id = data?.user?.id;
